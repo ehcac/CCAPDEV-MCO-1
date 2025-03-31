@@ -1,43 +1,52 @@
-This application is done with the mongodb framework.
+This is a MongoDB-based application for managing laboratory reservations.
 
-To run:
+Setup Instructions
+1. Upload Pre-Made Data
+- JSON files are located in backend/models.
 
-JSON files are in backend/models
-upload these in mongodb to get the pre-made data
-
-
-To run the backend, in ccapdev-lab-reservation-system command line:
+2. Run the Backend
+In the ccapdev-lab-reservation-system directory, open a command line and run:
 cd backend
 npm install
 npm start
 
-To run the frontend, in ccapdev-lab-reservation-system command line:
+Run the Frontend
+In the same directory, open another terminal and run:
 cd frontend
 npm install
 npm start
 
-This will open browser, in localhost:3000, and direct you to the login page.
+This will open localhost:3000 in your browser and direct you to the login page.
 
-For student, login as:
-nicole.martin@dlsu.edu.ph
-password: password123
+Login Credentials
+Student Account
+Email: nicole.martin@dlsu.edu.ph
+Password: password123
+(Contains 2 pre-made reservations)
 
-this contains 2 pre-made reservations.
+Technician Account
+Email: kayla.dominguez@dlsu.edu.ph
+Password: password123
 
-For technician:
-kayla.dominguez@dlsu.edu.ph
-password: password123
+Libraries Used
+Frontend: react
+Backend: multer, uuid, bcrypt
 
-Working features:
-Login
-View Profile
-View Created Reservation
-Make reservation
-Search Users
-Edit reservation details
-Edit Profile
-Delete Reservation
-Delete Profile
+Features
+✅ Fully Functional
+✔ Login
+✔ View Profile
+✔ View Created Reservations
+✔ Make a Reservation
+✔ Search Users
+✔ Edit Reservation Details
+✔ Edit Profile
+✔ Delete Reservation
+✔ Delete Profile
 
-Semi-working features:
-Register (to implement hashing)
+⚠ Partially Implemented
+🔹 Register (password hashing not yet implemented)
+
+
+
+
