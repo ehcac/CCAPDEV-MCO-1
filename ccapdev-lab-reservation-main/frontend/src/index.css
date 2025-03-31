@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+    @apply relative min-h-full h-full;
+}
+
+#root {
+    @apply flex h-full flex-col items-center;
+}
+
+a {
+    @apply !text-linkblue !underline;
+}
+
+@layer components {
+    .formlabel {
+        @apply font-sans text-fontgray font-light text-sm;
+    }
+
+    .required {
+        @apply after:content-['\00a0*'] after:text-errorred
+    }
+
+    .forminput {
+        @apply block rounded-md border-0 py-2 pl-3 pr-8 mb-3 font-sans text-fontgray font-semibold text-sm bg-fieldgray outline-none;
+    }
+
+    .formbutton {
+        @apply w-28 py-1.5 rounded-full bg-linkblue text-white font-bold shadow hover:shadow-md
+    }
+
+    .formerror {
+        @apply outline outline-offset-0 outline-errorred;
+    }
+
+    .msgerror {
+        @apply font-sans text-errorred font-light text-sm;
+    }
+}
+
