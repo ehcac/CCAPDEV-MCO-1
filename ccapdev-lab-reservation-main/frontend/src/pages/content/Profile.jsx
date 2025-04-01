@@ -35,7 +35,7 @@ export default function Profile() {
         {label: "Laboratory", accessor: "labID"},
         {label: "Seat", accessor: "seatNumber"}, 
         {label: "Reservation Date", accessor: "formattedReservationDate"},
-        {label: "Timeslot", accessor: "timeSlot"},
+        {label: "Timeslot", accessor: "timeSlots"},
         {label: "Time of Request", accessor: "formattedCreatedAt"},
         {label: "", accessor:"edit"},
         {label: "", accessor:"cancel"}
@@ -110,35 +110,54 @@ export default function Profile() {
                 }
                 const data = await response.json();
 
-                const formattedData = data.map((reservation) => ({
-                    ...reservation,
-                    fullName: `${reservation.userDetails.firstName} ${reservation.userDetails.lastName}`,
-                    formattedReservationDate: new Date(reservation.startTime).toLocaleString("en-US", { 
-                        month: "long",
-                        day: "2-digit",
-                        year: "numeric"
-                    }),
-                    timeSlot: `${new Date(reservation.startTime).toLocaleTimeString("en-US", { 
-                        hour12: false, 
-                        hour: "2-digit", 
-                        minute: "2-digit",
-                        timeZone: "Asia/Singapore"
-                    })} - ${new Date(reservation.endTime).toLocaleTimeString("en-US", { 
-                        hour12: false, 
-                        hour: "2-digit", 
-                        minute: "2-digit",
-                        timeZone: "Asia/Singapore"
-                    })}`,
-                    formattedCreatedAt: new Date(reservation.createdAt).toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour12: false, 
-                        hour: "2-digit", 
-                        minute: "2-digit",
-                        timeZone: "Asia/Singapore"
-                    })
-                }));
+                const formattedData = data.map((reservation) => {
+                    const startTimes = Array.isArray(reservation.startTime) ? reservation.startTime : [reservation.startTime];
+                    const endTimes = Array.isArray(reservation.endTime) ? reservation.endTime : [reservation.endTime];
+    
+                    // Map over time slots to format "HH:mm - HH:mm"
+                    const timeSlots = startTimes.map((startTime, index) => {
+                        const endTime = endTimes[index] || startTime; // Prevent undefined endTime
+    
+                        if (!startTime || !endTime) return null; // Skip invalid entries
+    
+                        const formattedStart = new Date(startTime).toLocaleTimeString("en-US", { 
+                            hour12: false, 
+                            hour: "2-digit", 
+                            minute: "2-digit",
+                            timeZone: "Asia/Singapore"
+                        });
+    
+                        const formattedEnd = new Date(endTime).toLocaleTimeString("en-US", { 
+                            hour12: false, 
+                            hour: "2-digit", 
+                            minute: "2-digit",
+                            timeZone: "Asia/Singapore"
+                        });
+    
+                        console.log(formattedStart, "-", formattedEnd);
+                        return `${formattedStart} - ${formattedEnd}`;
+                    }).filter(Boolean); // Remove any null values
+    
+                    return {
+                        ...reservation,
+                        fullName: `${reservation.userDetails.firstName} ${reservation.userDetails.lastName}`,
+                        formattedReservationDate: new Date(startTimes[0]).toLocaleDateString("en-US", { 
+                            month: "long",
+                            day: "2-digit",
+                            year: "numeric"
+                        }),
+                        timeSlots: timeSlots.join(", "), // Properly join multiple slots
+                        formattedCreatedAt: new Date(reservation.createdAt).toLocaleString("en-US", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour12: false, 
+                            hour: "2-digit", 
+                            minute: "2-digit",
+                            timeZone: "Asia/Singapore"
+                        })
+                    };
+                });
 
                 setReservations(formattedData);
             } catch (err) {
