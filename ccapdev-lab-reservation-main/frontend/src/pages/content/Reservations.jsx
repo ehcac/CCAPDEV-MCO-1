@@ -16,7 +16,7 @@ export default function Reservations() {
         { label: "Laboratory", accessor: "labID" },
         { label: "Seat", accessor: "seatNumber" }, 
         { label: "Reservation Date", accessor: "formattedReservationDate" },
-        { label: "Timeslot", accessor: "timeSlot" },
+        { label: "Timeslot", accessor: "timeSlots" },
         { label: "Time of Request", accessor: "formattedCreatedAt" },
         { label: "", accessor: "edit" },
         { label: "", accessor: "cancel" }
@@ -30,37 +30,55 @@ export default function Reservations() {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
-
-                const formattedData = data.map((reservation) => ({
-                    ...reservation,
-                    fullName: `${reservation.userDetails.firstName} ${reservation.userDetails.lastName}`,
-                    formattedReservationDate: new Date(reservation.startTime).toLocaleString("en-US", { 
-                        month: "long",
-                        day: "2-digit",
-                        year: "numeric"
-                    }),
-                    timeSlot: `${new Date(reservation.startTime).toLocaleTimeString("en-US", { 
-                        hour12: false, 
-                        hour: "2-digit", 
-                        minute: "2-digit",
-                        timeZone: "Asia/Singapore"
-                    })} - ${new Date(reservation.endTime).toLocaleTimeString("en-US", { 
-                        hour12: false, 
-                        hour: "2-digit", 
-                        minute: "2-digit",
-                        timeZone: "Asia/Singapore"
-                    })}`,
-                    formattedCreatedAt: new Date(reservation.createdAt).toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour12: false, 
-                        hour: "2-digit", 
-                        minute: "2-digit",
-                        timeZone: "Asia/Singapore"
-                    })
-                }));
-
+    
+                const formattedData = data.map((reservation) => {
+                    const startTimes = Array.isArray(reservation.startTime) ? reservation.startTime : [reservation.startTime];
+                    const endTimes = Array.isArray(reservation.endTime) ? reservation.endTime : [reservation.endTime];
+    
+                    // Map over time slots to format "HH:mm - HH:mm"
+                    const timeSlots = startTimes.map((startTime, index) => {
+                        const endTime = endTimes[index] || startTime; // Prevent undefined endTime
+    
+                        if (!startTime || !endTime) return null; // Skip invalid entries
+    
+                        const formattedStart = new Date(startTime).toLocaleTimeString("en-US", { 
+                            hour12: false, 
+                            hour: "2-digit", 
+                            minute: "2-digit",
+                            timeZone: "Asia/Singapore"
+                        });
+    
+                        const formattedEnd = new Date(endTime).toLocaleTimeString("en-US", { 
+                            hour12: false, 
+                            hour: "2-digit", 
+                            minute: "2-digit",
+                            timeZone: "Asia/Singapore"
+                        });
+    
+                        return `${formattedStart} - ${formattedEnd}`;
+                    }).filter(Boolean); 
+    
+                    return {
+                        ...reservation,
+                        fullName: `${reservation.userDetails.firstName} ${reservation.userDetails.lastName}`,
+                        formattedReservationDate: new Date(startTimes[0]).toLocaleDateString("en-US", { 
+                            month: "long",
+                            day: "2-digit",
+                            year: "numeric"
+                        }),
+                        timeSlots: timeSlots.join(", "), 
+                        formattedCreatedAt: new Date(reservation.createdAt).toLocaleString("en-US", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour12: false, 
+                            hour: "2-digit", 
+                            minute: "2-digit",
+                            timeZone: "Asia/Singapore"
+                        })
+                    };
+                });
+    
                 setReservations(formattedData);
             } catch (err) {
                 console.error("Error fetching reservations:", err);
@@ -69,9 +87,81 @@ export default function Reservations() {
                 setLoading(false);
             }
         };
-
+    
         fetchReservations();
     }, [auth.user]);
+    
+    useEffect(() => {
+        const fetchReservations = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/reservations`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+    
+                const formattedData = data.map((reservation) => {
+                    const startTimes = Array.isArray(reservation.startTime) ? reservation.startTime : [reservation.startTime];
+                    const endTimes = Array.isArray(reservation.endTime) ? reservation.endTime : [reservation.endTime];
+    
+                    // Map over time slots to format "HH:mm - HH:mm"
+                    const timeSlots = startTimes.map((startTime, index) => {
+                        const endTime = endTimes[index] || startTime; // Prevent undefined endTime
+    
+                        if (!startTime || !endTime) return null; // Skip invalid entries
+    
+                        const formattedStart = new Date(startTime).toLocaleTimeString("en-US", { 
+                            hour12: false, 
+                            hour: "2-digit", 
+                            minute: "2-digit",
+                            timeZone: "Asia/Singapore"
+                        });
+    
+                        const formattedEnd = new Date(endTime).toLocaleTimeString("en-US", { 
+                            hour12: false, 
+                            hour: "2-digit", 
+                            minute: "2-digit",
+                            timeZone: "Asia/Singapore"
+                        });
+    
+                        console.log(formattedStart, "-", formattedEnd);
+                        return `${formattedStart} - ${formattedEnd}`;
+                    }).filter(Boolean); // Remove any null values
+    
+                    return {
+                        ...reservation,
+                        fullName: `${reservation.userDetails.firstName} ${reservation.userDetails.lastName}`,
+                        formattedReservationDate: new Date(startTimes[0]).toLocaleDateString("en-US", { 
+                            month: "long",
+                            day: "2-digit",
+                            year: "numeric"
+                        }),
+                        timeSlots: timeSlots.join(", "), // Properly join multiple slots
+                        formattedCreatedAt: new Date(reservation.createdAt).toLocaleString("en-US", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour12: false, 
+                            hour: "2-digit", 
+                            minute: "2-digit",
+                            timeZone: "Asia/Singapore"
+                        })
+                    };
+                });
+    
+                setReservations(formattedData);
+            } catch (err) {
+                console.error("Error fetching reservations:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchReservations();
+    }, [auth.user]);
+        
+    
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -83,8 +173,8 @@ export default function Reservations() {
     ));
 
     const reservationVisuals = reservations.map((reservation, index) => {
-        const currentTime = new Date(); // Get current time
-        const reservationStartTime = new Date(reservation.startTime); // Convert stored startTime
+        const currentTime = new Date(); 
+        const reservationStartTime = new Date(reservation.startTime); 
 
         // Compute the threshold: reservation start time + 10 minutes
         const tenMinutesAfterStart = new Date(reservationStartTime.getTime() + 10 * 60 * 1000);

@@ -7,12 +7,12 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         return JSON.parse(localStorage.getItem("user")) ?? null;
     });
-    const [errorMessage, setErrorMessage] = useState(""); // ✅ Moved inside the component
+    const [errorMessage, setErrorMessage] = useState(""); 
     const navigate = useNavigate();
 
     const loginAction = async (username, password, remember) => {
         try {
-            const response = await fetch("http://localhost:5000/api/login", {
+            const response = await fetch("http://localhost:5000/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: username, password }) 
@@ -47,7 +47,7 @@ const AuthProvider = ({ children }) => {
         }
     };
 
-    const registerAction = async (firstName, lastName, email, password, confirmPassword) => { // ✅ Fixed missing parameters
+    const registerAction = async (firstName, lastName, email, password, confirmPassword) => { 
         console.log("Sending request with:", { firstName, lastName, email, password, confirmPassword });
 
         try {
@@ -66,7 +66,7 @@ const AuthProvider = ({ children }) => {
             alert(data.message);
             navigate("/login");
         } catch (error) {
-            console.error("❌ Registration error:", error);
+            console.error("Registration error:", error);
             setErrorMessage(error.message);
             alert(error.message);
         }

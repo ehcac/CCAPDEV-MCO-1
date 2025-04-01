@@ -87,6 +87,7 @@ export default function Edit() {
           //previously 700 - 2400
           var allTimeslots = createTimeslots("07:00", "19:00", 30);
 
+          console.log("selected Day,", selectedDay);
           if (selectedDay != null && selectedDay.value.getDate() == today.getDate()) {
             allTimeslots = filterPastTimeslots(allTimeslots);
           }
@@ -119,29 +120,32 @@ export default function Edit() {
                 setSelectedRoom(matchedRoom);  
     
                 console.log("Matched Room:", matchedRoom); 
-                
-                // convert timestamps to Date objects
-                const startDate = new Date(data.startTime);
-                const endDate = new Date(data.endTime);
+
+                const startDate = Array.isArray(data.startTime) ? data.startTime.map(time => new Date(time)) : [new Date(data.startTime)];
+                const endDate = Array.isArray(data.endTime) ? data.endTime.map(time => new Date(time)) : [new Date(data.endTime)];
     
-                if (isNaN(startDate) || isNaN(endDate)) {
+                if (startDate.some(date => isNaN(date)) || endDate.some(date => isNaN(date))) {
                     throw new Error("Invalid date format");
-                }                
-                
+                }
+    
                 setSelectedDay({
-                    label: startDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
-                    value: startDate,
+                    label: startDate[0].toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
+                    value: startDate[0]
                 });
                 
     
-                const startTimeLabel = `${startDate.getHours()}:${startDate.getMinutes().toString().padStart(2, '0')}`;
-                const endTimeLabel = `${endDate.getHours()}:${endDate.getMinutes().toString().padStart(2, '0')}`;
+                const timeLabels = startDate.map((start, index) => {
+                    const startTimeLabel = `${start.getHours()}:${start.getMinutes().toString().padStart(2, '0')}`;
+                    const endTimeLabel = `${endDate[index].getHours()}:${endDate[index].getMinutes().toString().padStart(2, '0')}`;
+                    return `${startTimeLabel} - ${endTimeLabel}`;
+                });
     
-                console.log("Start time and end:", startTimeLabel, endTimeLabel);
+                console.log("Start time and end:", timeLabels);
     
-                setSelectedTime([
-                    { label: `${startTimeLabel} - ${endTimeLabel}`, value: { startDate, endDate } }
-                ]);
+                setSelectedTime(startDate.map((start, index) => ({
+                    label: timeLabels[index],
+                    value: { startDate: start, endDate: endDate[index] }
+                })));
     
                 setSelectedSeat(data.seatNumber);
     
@@ -153,6 +157,7 @@ export default function Edit() {
     
         fetchReservation();
     }, [id]);
+    
 
     useEffect(() => {
         console.log("Updated selected room:", selectedRoom);
@@ -168,7 +173,7 @@ export default function Edit() {
     */
     
     // gets all reservation, checks if any reservation conflicts with reservation to be edited
-    const fetchUnavailableSeats = async () => {
+    const fetchUnavailableSeats = async (userID) => {
         if (!selectedRoom || !selectedRoom.value) {
             console.warn("Skipping fetch: Selected room is undefined.");
             return [];
@@ -184,55 +189,74 @@ export default function Edit() {
             console.error("selectedDay is not a Date:", selectedDay);
             return [];
         }
-
-        /////
-        //console.log("Selected time: ", selectedTime[0].label);
-        const [startTime, endTime] = selectedTime[0].label.split(" - "); // split "10:30 - 11:00"
-        const [startHour, startMinute] = startTime.split(":").map(num => num.padStart(2, "0"));
-        const [endHour, endMinute] = endTime.split(":").map(num => num.padStart(2, "0"));
     
-        const selectedTimeObj = {
-            start: { hour: startHour, minute: startMinute },
-            end: { hour: endHour, minute: endMinute }
-        };
+        if (!selectedTime || selectedTime.length === 0 || !selectedTime[0]?.value) {
+            console.warn("No time slot selected.");
+            return [];
+        }
+    
+        console.log("Selected Time:", selectedTime);
+        console.log("Type of selectedTime[0].value:", typeof selectedTime[0]?.value);
+
+    
+        // Extract start and end times from selectedTime array
+        const selectedTimeObj = selectedTime.map((timeSlot) => {
+            const [startTime, endTime] = timeSlot.label.split(" - ");
+            const [startHour, startMinute] = startTime.split(":").map(num => num.padStart(2, "0"));
+            const [endHour, endMinute] = endTime.split(":").map(num => num.padStart(2, "0"));
+    
+            return {
+                start: { hour: startHour, minute: startMinute },
+                end: { hour: endHour, minute: endMinute }
+            };
+        });
     
         console.log("Formatted selectedTime:", selectedTimeObj);
-        
-        // ensure selectedDay.value is a Date before using setHours()
-        const selectedDate = selectedDay.value instanceof Date ? new Date(selectedDay.value) : new Date(selectedDay.value);
-        selectedDate.setHours(parseInt(selectedTimeObj.start.hour), parseInt(selectedTimeObj.start.minute), 0, 0);
     
-        // construct selectedSlot to this format:
-        //{label: 'March 12, 2025 (15:00 - 15:30)', value: '2025-03-12T07:00:00.000Z'}
-        const selectedSlot = {
-            label: `${selectedDay.label} (${selectedTimeObj.start.hour}:${selectedTimeObj.start.minute} - ${selectedTimeObj.end.hour}:${selectedTimeObj.end.minute})`,
-            value: selectedDate.toISOString()
-        };
-        
-        console.log("Selected Slot:", selectedSlot);
-
-        const selectedSlotDate = new Date(selectedSlot.value);
-
-        ////
-        const conflictingReservations = reservations.filter((res) => {
-            const startDate = new Date(res.startTime).toISOString();
-            //const selectedDate = new Date(selectedDay.value).toISOString();
-        
-            console.log("Start Date:", startDate, "| Selected Time:", selectedSlotDate);
-        
-            return res.labID === selectedRoom.value && (startDate === selectedSlotDate.toISOString());
+        const selectedDate = new Date(selectedDay.value);
+    
+        const startTimes = selectedTimeObj.map(time => {
+            const date = new Date(selectedDate);
+            date.setHours(parseInt(time.start.hour), parseInt(time.start.minute), 0, 0);
+            return date;
         });
-        
     
-        const unavailableSeatDetails = conflictingReservations.map((res) => ({
-            seatNumber: res.seatNumber || null,
-            userID: res.userID || null,
-            firstName: res.userDetails?.firstName || null,
-            lastName: res.userDetails?.lastName || null,
-            isAnonymous: res.isAnonymous ?? false,
+        console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
+    
+        const selectedSlots = selectedTimeObj.map((time, index) => ({
+            label: `${selectedDay.label} (${time.start.hour}:${time.start.minute} - ${time.end.hour}:${time.end.minute})`,
+            value: startTimes[index].toISOString()
         }));
     
+        console.log("Selected Slots:", selectedSlots);
+    
+        const conflictingReservations = reservations.filter((res) => {
+            if (!Array.isArray(res.startTime) || res.startTime.some(date => isNaN(new Date(date).getTime()))) {
+                console.warn("Invalid or non-array startTime found in reservation:", res.startTime);
+                return false; 
+            }
+    
+            const reservationStartDates = res.startTime.map(date => new Date(date).toISOString());
+    
+            return (
+                res.labID === selectedRoom.value &&
+                selectedSlots.some(slot => reservationStartDates.includes(slot.value))
+            );
+        });
+    
         console.log("Conflicting Reservations:", conflictingReservations);
+    
+        const unavailableSeatDetails = conflictingReservations
+            .filter(res => res.seatNumber)
+            .map(res => ({
+                seatNumber: res.seatNumber,
+                userID: res.userID || null,
+                firstName: res.userDetails?.firstName || null,
+                lastName: res.userDetails?.lastName || null,
+                isAnonymous: res.isAnonymous ?? false
+            }));
+    
+        console.log("Unavailable seats:", unavailableSeatDetails);
         return unavailableSeatDetails;
     };
     
@@ -386,7 +410,7 @@ export default function Edit() {
 
     const handleSubmit = ((e) => {
         e.preventDefault();
-        console.log(selectedSeat);
+        //console.log(selectedSeat);
 
         const formData = new FormData(e.target);
 
@@ -432,13 +456,72 @@ export default function Edit() {
     });
 
     const submitData = (async (formData) => {
-        console.log("UpdatedData: ",formData);
+        try {
+            if (!formData || !formData.day || !formData.timeslot || formData.timeslot.length === 0) {
+                console.error("Invalid formData: Missing required fields.");
+                enqueueSnackbar("Please select a valid date and time slot.", { variant: 'error' });
+                return;
+            }
+        
+            // Convert `day` to a Date object
+            const selectedDate = new Date(formData.day);
+            if (isNaN(selectedDate.getTime())) {
+                console.error("Invalid date:", formData.day);
+                enqueueSnackbar("Invalid date selected.", { variant: 'error' });
+                return;
+            }
+        
+            // Extract start and end times as an array
+            const timeSlots = formData.timeslot.map(slot => {
+                const [startTime, endTime] = slot.split(" - "); // "09:00 - 09:30" -> ["09:00", "09:30"]
+                const [startHour, startMinute] = startTime.split(":").map(Number);
+                const [endHour, endMinute] = endTime.split(":").map(Number);
+        
+                return {
+                    start: { hour: startHour, minute: startMinute },
+                    end: { hour: endHour, minute: endMinute }
+                };
+            });
+        
+            console.log("Formatted time slots:", timeSlots);
+        
+            // Create an array of start time Date objects
+            const startTimes = timeSlots.map(time => {
+                const date = new Date(selectedDate);
+                date.setHours(time.start.hour, time.start.minute, 0, 0);
+                return date;
+            });
+
+            // Create an array of end time Date objects
+            const endTimes = timeSlots.map(time => {
+                const date = new Date(selectedDate);
+                date.setHours(time.end.hour, time.end.minute, 0, 0);
+                return date;
+            });
+        
+            console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
+        
+            // Use the first and last times to determine the reservation window
+            const startDateTime = startTimes[0]; // First selected time
+            const endDateTime = new Date(selectedDate);
+            endDateTime.setHours(timeSlots[timeSlots.length - 1].end.hour, timeSlots[timeSlots.length - 1].end.minute, 0, 0);
+        
+            // Convert to ISO format for the database
+            const formattedData = {
+                labID: formData.room,
+                startTime: startTimes.map(date => date.toISOString()), // Now an array of ISO date strings
+                endTime: endTimes.map(date => date.toISOString()), // Last selected end time
+                seatNumber: parseInt(formData.selectedSeat, 10),
+                isAnonymous: isAnonymous,
+            };
+        
+            console.log("Formatted data for DB:", formattedData);
 
         //TODO: send formdata to server
         const response = await fetch(`http://localhost:5000/api/reservations/resEdit/${id}`,{
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
+            body: JSON.stringify(formattedData),
         });
         //TODO: check server response
         //if ok
@@ -446,7 +529,10 @@ export default function Edit() {
             const errorMessage = await response.text();
             throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`);
         }
-
+    } catch (error){
+        console.error("Error submitting reservation:", error);
+        enqueueSnackbar("Failed to reserve. Please try again.", { variant: 'error' });
+    }
         setError("");
         enqueueSnackbar("Successfully edited!", {variant:'success', preventDuplicate:true});
     });

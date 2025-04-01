@@ -160,6 +160,56 @@ router.get("/edit/:id", async (req, res) => {
     }
 });
 
+router.post('/resEdit/:id', async (req, res) => { 
+    try {
+        const reservationId = req.params.id;
+        const { labID, startTime, endTime, seatNumber, isAnonymous } = req.body;
+        
+        if ( !labID || !startTime || !endTime || !seatNumber) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+        if (!ObjectId.isValid(reservationId)) {
+            return res.status(400).json({ error: "Invalid ID format" });
+        }
+        const startDates = Array.isArray(startTime) ? startTime.map(time => new Date(time)) : [new Date(startTime)];
+        const endDates = Array.isArray(endTime) ? endTime.map(time => new Date(time)) : [new Date(endTime)];
+
+        const existingReservation = await db.collection('ReservationsByUsers').findOne({ _id: new ObjectId(reservationId) });
+        
+        if (!existingReservation) {
+            return res.status(404).json({ error: "Reservation not found" });
+        }
+
+        const updatedData = {
+            labID,
+            seatNumber,
+            startTime: startDates,  
+            endTime: endDates,      
+            updatedAt: new Date(),
+        };
+
+        // Update the reservation in the database
+        const result = await db.collection('ReservationsByUsers').updateOne(
+            { _id: new ObjectId(reservationId) },
+            { $set: updatedData }
+        );
+
+        console.log("Updated in DB: ", result);
+
+        // Check if the reservation was updated
+        if (result.modifiedCount > 0) {
+            return res.json({ message: "Successfully edited!" });
+        } else {
+            return res.status(404).json({ error: "Reservation not found or no changes made" });
+        }
+    } catch (error) {
+        console.error("Error updating reservation:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+/*
 router.post('/resEdit/:id', async (req, res) => {
     try {
         const reservationId = req.params.id;
@@ -204,7 +254,7 @@ router.post('/resEdit/:id', async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 });
-
+*/
 
 
 // adds to database
@@ -212,38 +262,40 @@ router.post("/", async (req, res) => {
     try {
         const { userID, labID, startTime, endTime, seatNumber, isAnonymous } = req.body;
 
-        // Validate required fields
         if (!userID || !labID || !startTime || !endTime || !seatNumber) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
-        // Convert startTime & endTime to Date objects
-        const startDate = new Date(startTime);
-        const endDate = new Date(endTime);
+        const startDates = Array.isArray(startTime) ? startTime.map(time => new Date(time)) : [new Date(startTime)];
+        const endDates = Array.isArray(endTime) ? endTime.map(time => new Date(time)) : [new Date(endTime)];
+        //const endDate = new Date(endTime);
 
-        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-            return res.status(400).json({ message: "Invalid date format" });
-        }
+        //console.log("startDate ", startDates);
+        //console.log("endDate ", endDates);
+
+        //if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        //    return res.status(400).json({ message: "Invalid date format" });
+        //}
         const reservationsCollection = db.collection("ReservationsByUsers");
 
-        // Check if the seat is already reserved
+        // check if the seat is already reserved
         const existingReservation = await db.collection("ReservationsByUsers").findOne({
             labID,
             seatNumber,
-            startTime: { $lte: endDate },
-            endTime: { $gte: startDate }
+            startTime: { $lte: endDates },
+            endTime: { $gte: startDates }
         });
 
         if (existingReservation) {
             return res.status(409).json({ message: "Seat already reserved for this time slot" });
         }
 
-        // Create a new reservation
+        // create a new reservation
         const newReservation = {
             userID,
             labID,
-            startTime: startDate,
-            endTime: endDate,
+            startTime: startDates,
+            endTime: endDates,
             seatNumber,
             isAnonymous: isAnonymous ?? false,
             createdAt: new Date(),
@@ -251,7 +303,7 @@ router.post("/", async (req, res) => {
         };
 
 
-        // Save to the database
+        // save to the database
         await reservationsCollection.insertOne(newReservation);
 
         res.status(201).json({ message: "Reservation successful", reservation: newReservation });

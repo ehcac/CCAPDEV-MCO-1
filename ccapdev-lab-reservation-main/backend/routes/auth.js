@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
   try {
     const existingUser = await db.collection("UserInformation").findOne({ email });
     if (existingUser) {
-      console.log('⚠️ User already exists:', email);
+      //console.log('⚠️ User already exists:', email);
       return res.status(400).json({ message: '❌ Email is already registered' });
     }
 
@@ -43,7 +43,7 @@ router.post('/register', async (req, res) => {
 
     //saves to database
     await userCollection.insertOne(newUser);
-    console.log("✅ User registered successfully:", newUser.email);
+    //console.log("✅ User registered successfully:", newUser.email);
 
     res.status(201).json({
       success: true,
@@ -56,22 +56,28 @@ router.post('/register', async (req, res) => {
   }
 });
 
-export default router;
 
-/*
+
 // Login route
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   console.log("🔑 Login attempt for:", email);
 
   try {
-    const user = await User.findOne({ email });
+    const user = await db.collection("UserInformation").findOne({ email });
     if (!user) {
-      console.warn('🚫 Login failed: User not found');
+      //console.warn('🚫 Login failed: User not found');
       return res.status(400).json({ message: '❌ Invalid email or password' });
     }
 
+    console.log('User found in DB:', user);  // Make sure user is found in the database
+    console.log('Password from user input:', password);  // Check the input password
+    console.log('Stored hashed password:', user.password);  // See what the stored hash looks like
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Password match result:', isPasswordValid);  // Check the result of comparison
+
+
+    //const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       console.warn('🚫 Login failed: Incorrect password');
       return res.status(400).json({ message: '❌ Invalid email or password' });
@@ -100,11 +106,11 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Logout route
+/*
 router.post('/logout', (req, res) => {
   console.log("🚪 User logged out");
   res.status(200).json({ message: '✅ Logout successful' });
 });
+*/
 
 export default router;
-*/
