@@ -22,6 +22,7 @@ import authRoutes from "./routes/auth.js";
 
 const app = express();
 app.use(express.json()); 
+const frontendURL = process.env.FRONTEND_URL;
 
 const corsOptions = {
   origin: process.env.CORS_ALLOWED_ORIGIN || "http://localhost:3000", // Default to localhost if no env var is set
