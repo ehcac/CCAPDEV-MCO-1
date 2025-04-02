@@ -77,12 +77,7 @@ router.get("/user/:id", async (req, res) => {
 
 //edit profile
 router.post("/:id", upload.single("profilePicture"), async (req, res) => {
-    //console.log(`POST request received for updating ID: ${req.params.id}`);
-    
     try {
-        //console.log("Request body:", req.body);
-        //console.log("Uploaded file:", req.file);
-
         const userId = req.params.id;
         let userObjectId;
 
@@ -93,37 +88,35 @@ router.post("/:id", upload.single("profilePicture"), async (req, res) => {
         }
 
         const existingUser = await db.collection("UserInformation").findOne({ _id: userObjectId });
-        //console.log("Existing user before update:", existingUser);
-
         if (!existingUser) {
             return res.status(404).json({ error: "User not found" });
         }
 
-        const result = await db.collection("UserInformation").updateOne(
-            { _id: userObjectId },
-            { 
-                $set: { 
-                    description: req.body.description,
-                    ...(req.file && { profilePicture: `/uploads/${req.file.filename}` }) 
-                }
-            }
-        );
+        const updateData = {
+            $set: {
+                description: req.body.description,
+            },
+        };
 
-        //console.log("Update result:", result);
+        if (req.file) {
+            updateData.$set.profilePicture = `/uploads/${req.file.filename}`;
+        }
+
+        const result = await db.collection("UserInformation").updateOne({ _id: userObjectId }, updateData);
 
         if (result.matchedCount === 0) {
             return res.status(404).json({ error: "User not found" });
         }
 
         const updatedUser = await db.collection("UserInformation").findOne({ _id: userObjectId });
-        //console.log("Updated user profile:", updatedUser);
 
         res.json(updatedUser);
     } catch (error) {
         console.error("Error updating profile:", error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message, stack: error.stack });
     }
 });
+
 
 
 //delete profile
