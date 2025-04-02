@@ -32,7 +32,7 @@ app.use(cors({
  
 
 // Use MONGO_URI from environment variable 
-const databaseURL = "mongodb+srv://vercel-admin-user-67ecf88bf82db626a478a2a3:cW7AiSc3wbKp2woX@cluster0.eooqkjj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; 
+const databaseURL = process.env.MONGODB_URI;
 const dbName = "lab-reservation-system"; 
 
 let db;

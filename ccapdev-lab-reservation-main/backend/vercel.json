@@ -13,7 +13,7 @@
     }
   ],
   "env": {
-    "MONGODB_URI": "mongodb+srv://vercel-admin-user-67ecf88bf82db626a478a2a3:cW7AiSc3wbKp2woX@cluster0.eooqkjj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "MONGODB_URI": "mongodb+srv://vercel-admin-user-67ecf88bf82db626a478a2a3:12345@cluster0.eooqkjj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     "PORT": "5000",
     "CORS_ALLOWED_ORIGIN": "https://lab-reservation-system.vercel.app/",
     "FRONTEND_URL": "https://lab-reservation-system.vercel.app/"
