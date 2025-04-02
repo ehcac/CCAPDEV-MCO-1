@@ -2,6 +2,7 @@ import { useAuth } from '../../AuthProvider.jsx';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { IconEdit, IconTrash, IconCheck } from '@tabler/icons-react';
+import { put } from "@vercel/blob";
 
 import pfp1 from '../../assets/pfp1.jpg';
 import pfp2 from '../../assets/pfp2.jpg';
@@ -180,6 +181,56 @@ export default function Profile() {
     
     const handleSave = async () => {
         try {
+            // Confirmation message
+            const confirmation = window.confirm("Are you sure you want to edit this profile?");
+            if (!confirmation) {
+                setEditMode(false);
+                return;
+            }
+    
+            const storedUser = JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"));
+            if (!storedUser) throw new Error("User not found in localStorage");
+    
+            let imageUrl = pfpUrl; 
+    
+            // If user selected a new image, upload it to Vercel Blob
+            if (selectedImage) {
+                const fileName = `profile_${storedUser.id}_${Date.now()}.${selectedImage.name.split('.').pop()}`;
+                const { url } = await put(fileName, selectedImage, {
+                    access: "public", 
+                    contentType: selectedImage.type,
+                });
+                imageUrl = url; 
+            }
+    
+            const formData = new FormData();
+            formData.append("description", description);
+            formData.append("profilePicture", imageUrl);
+    
+            // send update request
+            const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/profile/${storedUser.id}`, {
+                method: "POST",
+                body: formData,
+            });
+    
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`);
+            }
+    
+            const updatedUser = await response.json();
+            setUser(updatedUser);
+            setPfpUrl(updatedUser.profilePicture || pfp1);
+            setEditMode(false);
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            alert(`Failed to update profile: ${error.message}`);
+        }
+    };
+    
+    /*
+    const handleSave = async () => {
+        try {
             //confirmation message
             const confirmation = window.confirm("Are you sure you want to edit this profile?");
             if (!confirmation) {
@@ -243,6 +294,7 @@ export default function Profile() {
             alert(`Failed to delete reservation: ${error.message}`);
         }
     };    
+    */
 
     const handleDeleteProfile = async () => {
         if (!confirm("Are you sure you want to delete this profile?")) {
