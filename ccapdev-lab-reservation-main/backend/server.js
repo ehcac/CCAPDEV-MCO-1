@@ -24,7 +24,11 @@ const app = express();
 app.use(express.json()); 
 const frontendURL = process.env.FRONTEND_URL || "https://lab-reservation-system.vercel.app/";
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL, 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, 
+}));
 
 // Use MONGO_URI from environment variable 
 const databaseURL = process.env.MONGODB_URI;
