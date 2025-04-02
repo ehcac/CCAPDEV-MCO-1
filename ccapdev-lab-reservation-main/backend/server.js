@@ -29,9 +29,6 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 }));
-
-
-app.use(cors(corsOptions));
  
 
 // Use MONGO_URI from environment variable 
