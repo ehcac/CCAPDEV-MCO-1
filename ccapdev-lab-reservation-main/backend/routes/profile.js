@@ -11,7 +11,7 @@ import mime from "mime-types";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
+/*
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, "../uploads")); 
@@ -23,6 +23,63 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+*/
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+// Edit profile with Vercel Blob storage
+router.post("/:id", upload.single("profilePicture"), async (req, res) => {
+    try {
+        const userId = req.params.id;
+        let userObjectId;
+
+        try {
+            userObjectId = new ObjectId(userId);
+        } catch (error) {
+            return res.status(400).json({ error: "Invalid user ID format" });
+        }
+
+        const existingUser = await db.collection("UserInformation").findOne({ _id: userObjectId });
+
+        if (!existingUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        let profilePictureUrl = existingUser.profilePicture; // keep existing if no new upload
+        if (req.file) {
+            // upload the file to Vercel Blob
+            const fileName = `profile_${Date.now()}.${req.file.mimetype.split("/")[1]}`;
+            const { url } = await put(fileName, req.file.buffer, {
+                access: "public",  // allows public access to the file
+                contentType: req.file.mimetype,
+            });
+
+            profilePictureUrl = url; // update profile picture URL
+        }
+
+        // Update user profile in MongoDB
+        const result = await db.collection("UserInformation").updateOne(
+            { _id: userObjectId },
+            { $set: { 
+                description: req.body.description, 
+                profilePicture: profilePictureUrl 
+            } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Fetch updated user data
+        const updatedUser = await db.collection("UserInformation").findOne({ _id: userObjectId });
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
 
 //for logged-in user profile
 router.get("/:id", async (req, res) => {
@@ -75,6 +132,7 @@ router.get("/user/:id", async (req, res) => {
     }
 });
 
+/*
 //edit profile
 router.post("/:id", upload.single("profilePicture"), async (req, res) => {
     try {
@@ -119,8 +177,7 @@ router.post("/:id", upload.single("profilePicture"), async (req, res) => {
         });
     }    
 });
-
-
+*/
 
 //delete profile
 router.delete("/delete/:id", async(req,res) => {
