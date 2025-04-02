@@ -78,7 +78,7 @@ export default function Profile() {
                 const storedUser = JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"));;
                 if (!storedUser) throw new Error("User not found in localStorage");
         
-                const response = await fetch(`http://localhost:5000/api/profile/${storedUser.id}`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/profile/${storedUser.id}`);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         
                 const data = await response.json();
