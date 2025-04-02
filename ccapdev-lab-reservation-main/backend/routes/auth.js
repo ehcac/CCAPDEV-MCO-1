@@ -70,14 +70,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: '❌ Invalid email or password' });
     }
 
-    console.log('User found in DB:', user);  // Make sure user is found in the database
-    console.log('Password from user input:', password);  // Check the input password
-    console.log('Stored hashed password:', user.password);  // See what the stored hash looks like
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log('Password match result:', isPasswordValid);  // Check the result of comparison
-
-
-    //const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       console.warn('🚫 Login failed: Incorrect password');
       return res.status(400).json({ message: '❌ Invalid email or password' });
@@ -95,7 +88,7 @@ router.post('/login', async (req, res) => {
         id: user._id,
         role: user.role,
         name: `${user.firstName} ${user.lastName}`,
-        email: user.email,
+        otherID: user.userID,
       },
       token,
     });

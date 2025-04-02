@@ -330,5 +330,22 @@ router.delete("/delete/:id", async (req, res) => {
     }
 });
 
+router.delete("/deleteAll/:id", async (req, res) => {
+    const userID = req.params.id;  
+    console.log(`Deleting all reservations for userID: ${userID}`);
+    
+    try {
+        const result = await db.collection("ReservationsByUsers").deleteMany({ userID: userID });
+        if (result.deletedCount > 0) {
+            //console.log(`${result.deletedCount} reservations deleted for userID: ${userID}`);
+            return res.status(200).json({ message: `The profile was deleted together with their ${result.deletedCount} reservation(s).`});
+        } else {
+            return res.status(200).json({ message: `The profile was deleted together with their ${result.deletedCount} reservation(s).` });
+        }
+    } catch (error) {
+        console.error('🔥 Error deleting reservations:', error);
+        return res.status(500).json({ message: '⚠️ Internal server error' });
+    }
+});
 
 export default router;

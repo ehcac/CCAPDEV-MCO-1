@@ -30,19 +30,7 @@ Password: password123
 
 Libraries Used
 Frontend: react
-Backend: multer, uuid, bcrypt
+Backend: 
+multer: for storing user profile pictures
+uuid, bcrypt
 
-Features
-✅ Fully Functional
-✔ Login
-✔ View Profile
-✔ View Created Reservations
-✔ Make a Reservation
-✔ Search Users
-✔ Edit Reservation Details
-✔ Edit Profile
-✔ Delete Reservation
-✔ Delete Profile
-
-⚠ Partially Implemented
-🔹 Register (password hashing not yet implemented)

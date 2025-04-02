@@ -125,4 +125,20 @@ router.post("/:id", upload.single("profilePicture"), async (req, res) => {
     }
 });
 
+
+//delete profile
+router.delete("/delete/:id", async(req,res) => {
+    try {
+        const { id } = req.params;
+        const deletedProfile = await db.collection("UserInformation").deleteOne({ _id: new ObjectId(id) });
+        if (deletedProfile.deletedCount === 0) {
+                return res.status(404).json({ message: "Profile not found" });
+        }
+        res.status(200).json({message: "Profile deleted successfully"});
+    } catch (error) {
+        console.error("Error deleting Profile:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 export default router;

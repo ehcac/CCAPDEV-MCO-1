@@ -94,7 +94,7 @@ export default function Profile() {
     useEffect(() => {
         const getReservations = async () => {
             try {
-                const storedUser = JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"));;
+                //const storedUser = JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"));;
 
                 if (!user) {
                     throw new Error("User not logged in");
@@ -229,8 +229,8 @@ export default function Profile() {
                 throw new Error(errorData.message || `Error: ${response.statusText}`);
             }
     
-            // Update UI by filtering out the deleted reservation
-            setReservations((prevReservations) =>
+           
+                setReservations((prevReservations) =>
                 prevReservations.filter((reservation) => reservation._id !== reservationId)
             );
     
@@ -241,6 +241,77 @@ export default function Profile() {
         }
     };    
 
+    const handleDeleteProfile = async () => {
+        if (!confirm("Are you sure you want to delete this profile?")) {
+            return; 
+        }
+    
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"));
+            
+            if (!storedUser) throw new Error("User not found in localStorage or sessionStorage");
+    
+            const userID = storedUser.id;
+            const otherID = storedUser.otherID; 
+            
+            if (!userID) throw new Error("User ID is not available");
+    
+            // delete reservations
+            try {
+                if (otherID) {
+                    console.log("Deleting reservations for:", otherID);
+                    const resResponse = await fetch(`http://localhost:5000/api/reservations/deleteAll/${otherID}`, {
+                        method: "DELETE",
+                    });
+    
+                    if (!resResponse.ok) {
+                        const errorData = await resResponse.json();
+                        console.error("Failed to delete reservations:", errorData);
+                        throw new Error(errorData.message || `Error: ${resResponse.statusText}`);
+                    }
+                    console.log("Reservations deleted successfully");
+                    const resData = await resResponse.json();  // ✅ Get JSON response
+                    alert(JSON.stringify(resData.message));
+                }
+            } catch (error) {
+                console.error("Error deleting reservations:", error);
+                alert(`Failed to delete reservations: ${error.message}`);
+            }
+    
+            // delete profile
+            try {
+                console.log("Deleting profile with ID:", userID);
+                const response = await fetch(`http://localhost:5000/api/profile/delete/${userID}`, {
+                    method: "DELETE",
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Failed to delete profile:", errorData);
+                    throw new Error(errorData.message || `Error: ${response.statusText}`);
+                }
+                
+                //alert("Profile deleted successfully");
+                setEditMode(false);
+                setUser(null);
+                localStorage.removeItem("user");
+                localStorage.removeItem("token");
+                sessionStorage.removeItem("user");
+                sessionStorage.removeItem("token");
+                navigate("/login");
+    
+            } catch (error) {
+                console.error("Error deleting profile:", error);
+                alert(`Failed to delete profile: ${error.message}`);
+            }
+    
+        } catch (error) {
+            console.error("Unexpected error:", error);
+            alert(`Something went wrong: ${error.message}`);
+        }
+    };
+    
+    
     return (
         <>
             <div className="flex flex-col border-2 border-bgblue p-4 rounded-lg">
@@ -324,7 +395,7 @@ export default function Profile() {
                                     {
                                         canDelete && 
                                             <button className="formbutton bg-errorred"
-                                                onClick={() => {if (confirm("Do you want to delete your account?")) navigate("/login")}}>
+                                                onClick={(e) => {e.preventDefault(); handleDeleteProfile();}}>
                                                 Delete User
                                             </button>
                                     }
