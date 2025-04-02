@@ -194,7 +194,7 @@ router.post('/resEdit/:id', async (req, res) => {
             { $set: updatedData }
         );
 
-        console.log("Updated in DB: ", result);
+        //console.log("Updated in DB: ", result);
 
         // Check if the reservation was updated
         if (result.modifiedCount > 0) {
@@ -207,54 +207,6 @@ router.post('/resEdit/:id', async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 });
-
-
-/*
-router.post('/resEdit/:id', async (req, res) => {
-    try {
-        const reservationId = req.params.id;
-        const formData = req.body;
-
-        if (!ObjectId.isValid(reservationId)) {
-            return res.status(400).json({ error: "Invalid ID format" });
-        }
-
-        const [startHour, startMinute] = formData.timeslot[0].split(" - ")[0].split(":").map(Number);
-        const [endHour, endMinute] = formData.timeslot[0].split(" - ")[1].split(":").map(Number);
-
-        const selectedDate = new Date(formData.day);
-        selectedDate.setHours(startHour, startMinute, 0, 0);
-        const startTime = new Date(selectedDate.toISOString());
-
-        selectedDate.setHours(endHour, endMinute, 0, 0);
-        const endTime = new Date(selectedDate.toISOString());
-
-        const updatedData = {
-            labID: formData.room,
-            seatNumber: parseInt(formData.selectedSeat, 10),
-            startTime: startTime.toISOString(), 
-            endTime: endTime.toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-
-        const result = await db.collection('ReservationsByUsers').updateOne(
-            { _id: new ObjectId(reservationId) }, 
-            { $set: updatedData }
-        );
-
-        console.log("Updated in DB: ", result);
-
-        if (result.modifiedCount > 0) {
-            return res.json({ message: "Successfully edited!" });
-        } else {
-            return res.status(404).json({ error: "Reservation not found or no changes made" });
-        }
-    } catch (error) {
-        console.error("Error updating reservation:", error);
-        return res.status(500).json({ error: "Internal server error" });
-    }
-});
-*/
 
 
 // adds to database
@@ -332,7 +284,7 @@ router.delete("/delete/:id", async (req, res) => {
 
 router.delete("/deleteAll/:id", async (req, res) => {
     const userID = req.params.id;  
-    console.log(`Deleting all reservations for userID: ${userID}`);
+    //console.log(`Deleting all reservations for userID: ${userID}`);
     
     try {
         const result = await db.collection("ReservationsByUsers").deleteMany({ userID: userID });

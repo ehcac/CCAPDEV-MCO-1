@@ -99,7 +99,7 @@ export default function Profile() {
                 if (!user) {
                     throw new Error("User not logged in");
                 }
-                console.log("user.otherID:", user.otherID);
+                //console.log("user.otherID:", user.otherID);
 
                 const response = await fetch(`http://localhost:5000/api/reservations/${user.otherID}`, {
                     method: 'GET',
@@ -134,7 +134,7 @@ export default function Profile() {
                             timeZone: "Asia/Singapore"
                         });
     
-                        console.log(formattedStart, "-", formattedEnd);
+                        //console.log(formattedStart, "-", formattedEnd);
                         return `${formattedStart} - ${formattedEnd}`;
                     }).filter(Boolean); // Remove any null values
     
@@ -259,7 +259,7 @@ export default function Profile() {
             // delete reservations
             try {
                 if (otherID) {
-                    console.log("Deleting reservations for:", otherID);
+                    //console.log("Deleting reservations for:", otherID);
                     const resResponse = await fetch(`http://localhost:5000/api/reservations/deleteAll/${otherID}`, {
                         method: "DELETE",
                     });
@@ -269,8 +269,8 @@ export default function Profile() {
                         console.error("Failed to delete reservations:", errorData);
                         throw new Error(errorData.message || `Error: ${resResponse.statusText}`);
                     }
-                    console.log("Reservations deleted successfully");
-                    const resData = await resResponse.json();  // ✅ Get JSON response
+                    //console.log("Reservations deleted successfully");
+                    const resData = await resResponse.json(); 
                     alert(JSON.stringify(resData.message));
                 }
             } catch (error) {
@@ -280,7 +280,7 @@ export default function Profile() {
     
             // delete profile
             try {
-                console.log("Deleting profile with ID:", userID);
+                //console.log("Deleting profile with ID:", userID);
                 const response = await fetch(`http://localhost:5000/api/profile/delete/${userID}`, {
                     method: "DELETE",
                 });

@@ -87,7 +87,7 @@ export default function Edit() {
           //previously 700 - 2400
           var allTimeslots = createTimeslots("07:00", "19:00", 30);
 
-          console.log("selected Day,", selectedDay);
+          //console.log("selected Day,", selectedDay);
           if (selectedDay != null && selectedDay.value.getDate() == today.getDate()) {
             allTimeslots = filterPastTimeslots(allTimeslots);
           }
@@ -113,13 +113,13 @@ export default function Edit() {
                 const data = await response.json();
                 setReservation(data);
     
-                console.log("Rooms:", rooms);
-                console.log("Searching for labID:", data.labID);
+                //console.log("Rooms:", rooms);
+                //console.log("Searching for labID:", data.labID);
                 
                 const matchedRoom = rooms.find(room => room.value === data.labID);
                 setSelectedRoom(matchedRoom);  
     
-                console.log("Matched Room:", matchedRoom); 
+                //console.log("Matched Room:", matchedRoom); 
 
                 const startDate = Array.isArray(data.startTime) ? data.startTime.map(time => new Date(time)) : [new Date(data.startTime)];
                 const endDate = Array.isArray(data.endTime) ? data.endTime.map(time => new Date(time)) : [new Date(data.endTime)];
@@ -140,7 +140,7 @@ export default function Edit() {
                     return `${startTimeLabel} - ${endTimeLabel}`;
                 });
     
-                console.log("Start time and end:", timeLabels);
+                //console.log("Start time and end:", timeLabels);
     
                 setSelectedTime(startDate.map((start, index) => ({
                     label: timeLabels[index],
@@ -160,8 +160,8 @@ export default function Edit() {
     
 
     useEffect(() => {
-        console.log("Updated selected room:", selectedRoom);
-        console.log("Updated time:", selectedTime);
+        //console.log("Updated selected room:", selectedRoom);
+        //console.log("Updated time:", selectedTime);
     }, [selectedRoom, selectedTime]);
 
     /*
@@ -195,8 +195,8 @@ export default function Edit() {
             return [];
         }
     
-        console.log("Selected Time:", selectedTime);
-        console.log("Type of selectedTime[0].value:", typeof selectedTime[0]?.value);
+        //console.log("Selected Time:", selectedTime);
+        //console.log("Type of selectedTime[0].value:", typeof selectedTime[0]?.value);
 
     
         // Extract start and end times from selectedTime array
@@ -211,7 +211,7 @@ export default function Edit() {
             };
         });
     
-        console.log("Formatted selectedTime:", selectedTimeObj);
+        //console.log("Formatted selectedTime:", selectedTimeObj);
     
         const selectedDate = new Date(selectedDay.value);
     
@@ -221,14 +221,14 @@ export default function Edit() {
             return date;
         });
     
-        console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
+        //console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
     
         const selectedSlots = selectedTimeObj.map((time, index) => ({
             label: `${selectedDay.label} (${time.start.hour}:${time.start.minute} - ${time.end.hour}:${time.end.minute})`,
             value: startTimes[index].toISOString()
         }));
     
-        console.log("Selected Slots:", selectedSlots);
+        //console.log("Selected Slots:", selectedSlots);
     
         const conflictingReservations = reservations.filter((res) => {
             if (!Array.isArray(res.startTime) || res.startTime.some(date => isNaN(new Date(date).getTime()))) {
@@ -244,7 +244,7 @@ export default function Edit() {
             );
         });
     
-        console.log("Conflicting Reservations:", conflictingReservations);
+        //console.log("Conflicting Reservations:", conflictingReservations);
     
         const unavailableSeatDetails = conflictingReservations
             .filter(res => res.seatNumber)
@@ -256,7 +256,7 @@ export default function Edit() {
                 isAnonymous: res.isAnonymous ?? false
             }));
     
-        console.log("Unavailable seats:", unavailableSeatDetails);
+        //console.log("Unavailable seats:", unavailableSeatDetails);
         return unavailableSeatDetails;
     };
     
@@ -269,7 +269,7 @@ export default function Edit() {
             console.warn("Skipping fetch: Selected time slot is not selected.");
             return;
         }
-        console.log("Fetching seats for room:", selectedRoom.value);
+        //console.log("Fetching seats for room:", selectedRoom.value);
         setLoading(true); 
         try {
             const response = await fetch(`http://localhost:5000/api/lab/${selectedRoom.value}`);
@@ -320,7 +320,7 @@ export default function Edit() {
 
     useEffect(() => {
         if (selectedRoom?.value && selectedDay?.value && selectedTime?.length > 0) {
-            console.log("Fetching seats for room:", selectedRoom.value);
+            //console.log("Fetching seats for room:", selectedRoom.value);
             fetchUnavailableSeats();
             getSeats();
         } else {
@@ -365,7 +365,7 @@ export default function Edit() {
     });
 
     useEffect(() => {
-        console.log(seats);
+        //console.log(seats);
         getSeatVisuals();
     }, [seats, selectedRoom, selectedDay, selectedTime]);
 
@@ -430,7 +430,7 @@ export default function Edit() {
             valid = false;
         }
 
-        console.log("???: Obj: ",obj);
+        //console.log("???: Obj: ",obj);
 
         // check if any fields in the form have been left blank
         for (let field in obj) {
@@ -483,7 +483,7 @@ export default function Edit() {
                 };
             });
         
-            console.log("Formatted time slots:", timeSlots);
+            //console.log("Formatted time slots:", timeSlots);
         
             // Create an array of start time Date objects
             const startTimes = timeSlots.map(time => {
@@ -499,7 +499,7 @@ export default function Edit() {
                 return date;
             });
         
-            console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
+            //console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
         
             // Use the first and last times to determine the reservation window
             const startDateTime = startTimes[0]; // First selected time
@@ -515,16 +515,14 @@ export default function Edit() {
                 isAnonymous: isAnonymous,
             };
         
-            console.log("Formatted data for DB:", formattedData);
+            //console.log("Formatted data for DB:", formattedData);
 
-        //TODO: send formdata to server
         const response = await fetch(`http://localhost:5000/api/reservations/resEdit/${id}`,{
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formattedData),
         });
-        //TODO: check server response
-        //if ok
+
         if (!response.ok) {
             const errorMessage = await response.text();
             throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`);

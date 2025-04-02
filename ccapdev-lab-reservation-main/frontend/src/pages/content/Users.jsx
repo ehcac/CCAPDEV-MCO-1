@@ -21,8 +21,8 @@ export default function Users(){
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log("Fetched Users:", data);  // Debugging
-                setProfiles(data || []);  // Ensure it's an array
+                //console.log("Fetched Users:", data);  // Debugging
+                setProfiles(data || []);  
             } catch (err) {
                 console.error("Error fetching profiles:", err);
                 setError(err.message);

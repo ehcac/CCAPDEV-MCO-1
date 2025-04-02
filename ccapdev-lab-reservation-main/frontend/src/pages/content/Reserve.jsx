@@ -119,7 +119,7 @@ export default function Reserve() {
             return [];
         }
     
-        console.log("Selected Time:", selectedTime);
+        //console.log("Selected Time:", selectedTime);
     
         // Extract start and end times from selectedTime array
         const selectedTimeObj = selectedTime.map((timeSlot) => {
@@ -133,7 +133,7 @@ export default function Reserve() {
             };
         });
     
-        console.log("Formatted selectedTime:", selectedTimeObj);
+        //console.log("Formatted selectedTime:", selectedTimeObj);
     
         // Ensure selectedDay.value is a Date before using setHours()
         const selectedDate = new Date(selectedDay.value);
@@ -145,7 +145,7 @@ export default function Reserve() {
             return date;
         });
     
-        console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
+        //console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
     
         // Construct selectedSlot array in the format:
         const selectedSlots = selectedTimeObj.map((time, index) => ({
@@ -153,7 +153,7 @@ export default function Reserve() {
             value: startTimes[index].toISOString()
         }));
     
-        console.log("Selected Slots:", selectedSlots);
+        //console.log("Selected Slots:", selectedSlots);
     
         // Filter reservations that match ANY of the selected time slots
         const conflictingReservations = reservations.filter((res) => {
@@ -173,7 +173,7 @@ export default function Reserve() {
             );
         });
     
-        console.log("Conflicting Reservations:", conflictingReservations);
+        //console.log("Conflicting Reservations:", conflictingReservations);
     
         const unavailableSeatDetails = conflictingReservations
             .filter(res => res.seatNumber)
@@ -185,7 +185,7 @@ export default function Reserve() {
                 isAnonymous: res.isAnonymous ?? false
             }));
     
-        console.log("Unavailable seats:", unavailableSeatDetails);
+        //console.log("Unavailable seats:", unavailableSeatDetails);
         return unavailableSeatDetails;
     };
     
@@ -199,7 +199,7 @@ export default function Reserve() {
             console.warn("Skipping fetch: Selected time slot is not selected.");
             return;
         }
-        console.log("Fetching seats for room:", selectedRoom.value);
+        //console.log("Fetching seats for room:", selectedRoom.value);
         setLoading(true); 
         try {
             const response = await fetch(`http://localhost:5000/api/lab/${selectedRoom.value}`);
@@ -242,7 +242,7 @@ export default function Reserve() {
         
     useEffect(() => {
         if (selectedRoom?.value && selectedDay?.value && selectedTime?.length > 0) {
-            console.log("Fetching seats for room:", selectedRoom.value);
+            //console.log("Fetching seats for room:", selectedRoom.value);
             fetchUnavailableSeats();
             getSeats();
         } else {
@@ -290,7 +290,7 @@ export default function Reserve() {
     });
 
     useEffect(() => {
-        console.log(seats)
+        //console.log(seats)
         getSeatVisuals();
     }, [seats, selectedRoom, selectedDay, selectedTime])
 
@@ -343,7 +343,7 @@ export default function Reserve() {
             valid = false;
         }
 
-        console.log(obj);
+        //console.log(obj);
 
         // check if any fields in the form have been left blank
         for (let field in obj) {
@@ -367,7 +367,7 @@ export default function Reserve() {
 
     //add it to the database:
     const submitData = (async (formData) => {
-        console.log(formData);
+        //console.log(formData);
         /* this is formData
         day: "March 13, 2025"
         room: "GK404"
@@ -385,11 +385,6 @@ export default function Reserve() {
         createdAt 2025-03-08T11:00:00.000+00:00
         updatedAt 2025-03-08T11:00:00.000+00:00
         */
-
-        //TODO: send formdata to server
-
-        //TODO: check server response
-        //if ok
 
         try {
             if (!formData || !formData.day || !formData.timeslot || formData.timeslot.length === 0) {
@@ -418,7 +413,7 @@ export default function Reserve() {
                 };
             });
         
-            console.log("Formatted time slots:", timeSlots);
+            //console.log("Formatted time slots:", timeSlots);
         
             // Create an array of start time Date objects
             const startTimes = timeSlots.map(time => {
@@ -434,7 +429,7 @@ export default function Reserve() {
                 return date;
             });
         
-            console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
+            //console.log("Start Times Array:", startTimes.map(date => date.toISOString()));
         
             // Use the first and last times to determine the reservation window
             const startDateTime = startTimes[0]; // First selected time
@@ -451,7 +446,7 @@ export default function Reserve() {
                 isAnonymous: isAnonymous,
             };
         
-            console.log("Formatted data for DB:", formattedData);
+            //console.log("Formatted data for DB:", formattedData);
         
             // Send to the server
             const response = await fetch("http://localhost:5000/api/reservations", {
@@ -465,7 +460,7 @@ export default function Reserve() {
             }
         
             const responseData = await response.json();
-            console.log("Server Response:", responseData);
+            //console.log("Server Response:", responseData);
         
             // If successful, show success notification
             enqueueSnackbar("Successfully reserved!", { variant: 'success', preventDuplicate: true });

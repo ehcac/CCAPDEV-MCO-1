@@ -124,7 +124,7 @@ export default function Reservations() {
                             timeZone: "Asia/Singapore"
                         });
     
-                        console.log(formattedStart, "-", formattedEnd);
+                        //console.log(formattedStart, "-", formattedEnd);
                         return `${formattedStart} - ${formattedEnd}`;
                     }).filter(Boolean); // Remove any null values
     
@@ -182,8 +182,7 @@ export default function Reservations() {
         // Compare current time with threshold
         const deleteable = currentTime >= tenMinutesAfterStart;
 
-//fdkdl
-        console.log("current time: ", currentTime, " reservationTime: ", reservationStartTime, "| ", deleteable);
+        //console.log("current time: ", currentTime, " reservationTime: ", reservationStartTime, "| ", deleteable);
         return (
             <tr key={index} className="odd:bg-white even:bg-fieldgray hover:bg-bgpink">
                 {columnHeader.map((column) =>

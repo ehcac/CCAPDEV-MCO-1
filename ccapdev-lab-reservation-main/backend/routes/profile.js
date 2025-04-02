@@ -77,11 +77,11 @@ router.get("/user/:id", async (req, res) => {
 
 //edit profile
 router.post("/:id", upload.single("profilePicture"), async (req, res) => {
-    console.log(`POST request received for updating ID: ${req.params.id}`);
+    //console.log(`POST request received for updating ID: ${req.params.id}`);
     
     try {
-        console.log("Request body:", req.body);
-        console.log("Uploaded file:", req.file);
+        //console.log("Request body:", req.body);
+        //console.log("Uploaded file:", req.file);
 
         const userId = req.params.id;
         let userObjectId;
@@ -93,7 +93,7 @@ router.post("/:id", upload.single("profilePicture"), async (req, res) => {
         }
 
         const existingUser = await db.collection("UserInformation").findOne({ _id: userObjectId });
-        console.log("Existing user before update:", existingUser);
+        //console.log("Existing user before update:", existingUser);
 
         if (!existingUser) {
             return res.status(404).json({ error: "User not found" });
@@ -116,7 +116,7 @@ router.post("/:id", upload.single("profilePicture"), async (req, res) => {
         }
 
         const updatedUser = await db.collection("UserInformation").findOne({ _id: userObjectId });
-        console.log("Updated user profile:", updatedUser);
+        //console.log("Updated user profile:", updatedUser);
 
         res.json(updatedUser);
     } catch (error) {

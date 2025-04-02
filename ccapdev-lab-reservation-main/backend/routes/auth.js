@@ -11,7 +11,7 @@ const router = express.Router();
 // Register route
 router.post('/register', async (req, res) => {
   const { firstName, lastName, email, password, confirmPassword } = req.body;
-  console.log("📩 Received registration request:", req.body);
+  //console.log("📩 Received registration request:", req.body);
 
   // Check if all fields are provided
   if (!firstName || !lastName || !email || !password || !confirmPassword) {
@@ -61,7 +61,7 @@ router.post('/register', async (req, res) => {
 // Login route
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log("🔑 Login attempt for:", email);
+  //console.log("🔑 Login attempt for:", email);
 
   try {
     const user = await db.collection("UserInformation").findOne({ email });
