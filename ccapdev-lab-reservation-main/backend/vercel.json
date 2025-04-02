@@ -1,22 +1,21 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "server.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "/server.js"
-      }
-    ],
-    "env": {
-      "MONGODB_URI": "mongodb+srv://cabataychastine:lciNyDc0VSfDUHfE@cluster0.eooqkjj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-      "PORT": "5000",
-      "CORS_ALLOWED_ORIGIN": "https://lab-reservation-system.vercel.app/",
-      "FRONTEND_URL": "https://lab-reservation-system.vercel.app/"
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
     }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/server.js"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "mongodb+srv://cabataychastine:lciNyDc0VSfDUHfE@cluster0.eooqkjj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "PORT": "5000",
+    "CORS_ALLOWED_ORIGIN": "https://lab-reservation-system.vercel.app/",
+    "FRONTEND_URL": "https://lab-reservation-system.vercel.app/"
   }
-  
+}
