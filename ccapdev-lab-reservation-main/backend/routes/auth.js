@@ -62,6 +62,9 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   //console.log("🔑 Login attempt for:", email);
+  if (!db) {
+    return res.status(500).json({ message: "Database not connected" });
+  }
 
   try {
     const user = await db.collection("UserInformation").findOne({ email });

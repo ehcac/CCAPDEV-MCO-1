@@ -26,8 +26,6 @@ const frontendURL = process.env.FRONTEND_URL || "https://lab-reservation-system.
 
 app.use(cors());
 
- 
-
 // Use MONGO_URI from environment variable 
 const databaseURL = process.env.MONGODB_URI;
 const dbName = "lab-reservation-system"; 
