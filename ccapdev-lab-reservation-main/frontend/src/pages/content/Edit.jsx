@@ -107,7 +107,7 @@ export default function Edit() {
     useEffect(() => {
         const fetchReservation = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/reservations/edit/${id}`);
+                const response = await fetch(`${apiUrl}/api/reservations/edit/${id}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
