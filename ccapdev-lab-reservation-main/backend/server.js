@@ -25,7 +25,7 @@ app.use(express.json());
 const frontendURL = process.env.FRONTEND_URL || "https://lab-reservation-system.vercel.app";
 
 app.use(cors({
-  origin: "https://lab-reservation-system.vercel.app", 
+  origin: "https://lab-reservation-system.vercel.app/", 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
