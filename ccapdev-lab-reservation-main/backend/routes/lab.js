@@ -1,7 +1,9 @@
 import express from "express";
-import { db } from "../server.js";
 
 const router = express.Router();
+import { getDB } from "../server.js";
+const db = getDB();
+
 
 router.get('/:labID', async (req, res) => {
     const { labID } = req.params;
