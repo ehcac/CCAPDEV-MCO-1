@@ -22,12 +22,12 @@ import authRoutes from "./routes/auth.js";
 
 const app = express();
 app.use(express.json()); 
-const frontendURL = process.env.FRONTEND_URL || "https://lab-reservation-system.vercel.app/";
+const frontendURL = process.env.FRONTEND_URL || "https://lab-reservation-system.vercel.app";
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL, 
+  origin: "https://lab-reservation-system.vercel.app", 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true, 
+  credentials: true,
 }));
 
 // Use MONGO_URI from environment variable 
