@@ -2,12 +2,11 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { db } from "../server.js";
 import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 const router = express.Router();
-import { getDB } from "../server.js";
-const db = getDB();
 
 // Register route
 router.post('/register', async (req, res) => {
