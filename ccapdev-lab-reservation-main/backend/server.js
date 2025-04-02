@@ -27,7 +27,8 @@ const frontendURL = process.env.FRONTEND_URL || "https://lab-reservation-system.
 app.use(cors({
   origin: ["https://lab-reservation-system.vercel.app", 
   "https://lab-reservation-system-27y7tdqzl-ehcacs-projects.vercel.app"],
-  credentials: true,}
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']}
 ));
 
 // Use MONGO_URI from environment variable 
