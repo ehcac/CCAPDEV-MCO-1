@@ -54,6 +54,7 @@ router.post("/:id", upload.single("profilePicture"), async (req, res) => {
             const { url } = await put(fileName, req.file.buffer, {
                 access: "public",  // allows public access to the file
                 contentType: req.file.mimetype,
+                token: vercel_blob_rw_sjpgsBcRHbe9tGmj_ky2zasWh24pn5uehyAM9SQoGnRRWIT,
             });
 
             profilePictureUrl = url; // update profile picture URL

@@ -2,7 +2,6 @@ import { useAuth } from '../../AuthProvider.jsx';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { IconEdit, IconTrash, IconCheck } from '@tabler/icons-react';
-import { put } from "@vercel/blob";
 
 import pfp1 from '../../assets/pfp1.jpg';
 import pfp2 from '../../assets/pfp2.jpg';
@@ -181,7 +180,6 @@ export default function Profile() {
     
     const handleSave = async () => {
         try {
-            // Confirmation message
             const confirmation = window.confirm("Are you sure you want to edit this profile?");
             if (!confirmation) {
                 setEditMode(false);
@@ -191,24 +189,13 @@ export default function Profile() {
             const storedUser = JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"));
             if (!storedUser) throw new Error("User not found in localStorage");
     
-            let imageUrl = pfpUrl; 
-    
-            // If user selected a new image, upload it to Vercel Blob
-            if (selectedImage) {
-                const fileName = `profile_${storedUser.id}_${Date.now()}.${selectedImage.name.split('.').pop()}`;
-                const { url } = await put(fileName, selectedImage, {
-                    access: "public", 
-                    contentType: selectedImage.type,
-                });
-                imageUrl = url; 
-            }
-    
             const formData = new FormData();
             formData.append("description", description);
-            formData.append("profilePicture", imageUrl);
+            if (selectedImage) {
+                formData.append("profilePicture", selectedImage); // Send image to backend
+            }
     
-            // send update request
-            const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/profile/${storedUser.id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/profile/${storedUser.id}`, {
                 method: "POST",
                 body: formData,
             });
@@ -226,7 +213,7 @@ export default function Profile() {
             console.error("Error updating profile:", error);
             alert(`Failed to update profile: ${error.message}`);
         }
-    };
+    };    
     
     /*
     const handleSave = async () => {
