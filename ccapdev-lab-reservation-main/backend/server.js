@@ -22,10 +22,10 @@ import authRoutes from "./routes/auth.js";
 
 const app = express();
 app.use(express.json()); 
-const frontendURL = process.env.FRONTEND_URL;
+const frontendURL = process.env.FRONTEND_URL || "https://lab-reservation-system.vercel.app/";
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: frontendURL,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 }));
