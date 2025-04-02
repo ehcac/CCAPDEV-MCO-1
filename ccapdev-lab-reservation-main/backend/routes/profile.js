@@ -12,15 +12,23 @@ import mime from "mime-types";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const fs = require("fs");
+const uploadPath = path.join(__dirname, "../uploads");
+
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, "../uploads")); 
+        cb(null, uploadPath);
     },
     filename: function (req, file, cb) {
         const ext = mime.extension(file.mimetype) || "png"; 
-        cb(null, `profile_${Date.now()}.${ext}`); 
+        cb(null, `profile_${Date.now()}.${ext}`);
     }
 });
+
 
 const upload = multer({ storage: storage });
 
