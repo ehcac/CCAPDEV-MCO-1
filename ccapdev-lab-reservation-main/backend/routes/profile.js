@@ -112,9 +112,12 @@ router.post("/:id", upload.single("profilePicture"), async (req, res) => {
 
         res.json(updatedUser);
     } catch (error) {
-        console.error("Error updating profile:", error);
-        res.status(500).json({ error: error.message, stack: error.stack });
-    }
+        res.status(500).json({
+            error: error.message,
+            stack: error.stack,
+            requestData: req.body, // Optional: includes request data for further debugging
+        });
+    }    
 });
 
 
