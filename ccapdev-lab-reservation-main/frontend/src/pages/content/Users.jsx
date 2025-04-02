@@ -17,7 +17,7 @@ export default function Users(){
     useEffect(() => {
         const fetchProfiles = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/users`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/users`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }

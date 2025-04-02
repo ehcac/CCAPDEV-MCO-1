@@ -15,7 +15,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/profile/user/${id}`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/profile/user/${id}`);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 
                 const data = await response.json();

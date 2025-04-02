@@ -27,7 +27,7 @@ export default function Reservations() {
     useEffect(() => {
         const fetchReservations = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/reservations`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/reservations`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
@@ -96,7 +96,7 @@ export default function Reservations() {
     useEffect(() => {
         const fetchReservations = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/reservations`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/reservations`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
@@ -218,7 +218,7 @@ export default function Reservations() {
         }
     
         try {
-            const response = await fetch(`${apiUrl}/api/reservations/delete/${reservationId}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/reservations/delete/${reservationId}`, {
                 method: "DELETE",
             });
     

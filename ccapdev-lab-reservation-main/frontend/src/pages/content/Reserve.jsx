@@ -105,7 +105,7 @@ export default function Reserve() {
             return [];
         }
     
-        const response = await fetch(`${apiUrl}/api/reservations`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/reservations`);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -451,7 +451,7 @@ export default function Reserve() {
             //console.log("Formatted data for DB:", formattedData);
         
             // Send to the server
-            const response = await fetch(`${apiUrl}/api/reservations`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/reservations`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formattedData),

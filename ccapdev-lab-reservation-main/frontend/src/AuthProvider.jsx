@@ -53,7 +53,7 @@ const AuthProvider = ({ children }) => {
         console.log("Sending request with:", { firstName, lastName, email, password, confirmPassword });
 
         try {
-            const response = await fetch(`${apiUrl}/api/auth/register`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ firstName, lastName, email, password, confirmPassword})
