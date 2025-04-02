@@ -52,6 +52,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/lab", labRoutes);
 app.use("/api/auth", authRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Welcome to the Lab Reservation API");
+});
+
 app.listen(5000, () => console.log("Server running on port 5000"));
 
 export default app;
