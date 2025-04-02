@@ -97,14 +97,14 @@ export default function Profile() {
     useEffect(() => {
         const getReservations = async () => {
             try {
-                //const storedUser = JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"));;
+                const storedUser = JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"));;
 
                 if (!user) {
                     throw new Error("User not logged in");
                 }
                 //console.log("user.otherID:", user.otherID);
 
-                const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/reservations/${user.otherID}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/reservations/${storedUser.otherID}`, {
                     method: 'GET',
                 });
                 
