@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
     const { email, password } = req.body;
+    res.json({ message: "Login endpoint working!" });
 
     if (!email || !password) {
         return res.status(400).json({ message: "Email and password required" });
