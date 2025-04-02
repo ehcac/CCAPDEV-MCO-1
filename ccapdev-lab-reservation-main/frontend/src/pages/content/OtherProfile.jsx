@@ -9,11 +9,13 @@ export default function Profile() {
     const [pfpUrl, setPfpUrl] = useState(pfp1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const apiUrl = process.env.REACT_APP_API_URL;
+
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/profile/user/${id}`);
+                const response = await fetch(`${apiUrl}/api/profile/user/${id}`);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 
                 const data = await response.json();

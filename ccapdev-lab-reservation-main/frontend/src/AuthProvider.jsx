@@ -9,10 +9,12 @@ const AuthProvider = ({ children }) => {
     });
     const [errorMessage, setErrorMessage] = useState(""); 
     const navigate = useNavigate();
+    const apiUrl = process.env.REACT_APP_API_URL;
+
 
     const loginAction = async (username, password, remember) => {
         try {
-            const response = await fetch("http://localhost:5000/api/auth/login", {
+            const response = await fetch(`${apiUrl}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: username, password }) 
@@ -51,7 +53,7 @@ const AuthProvider = ({ children }) => {
         console.log("Sending request with:", { firstName, lastName, email, password, confirmPassword });
 
         try {
-            const response = await fetch("http://localhost:5000/api/auth/register", {
+            const response = await fetch(`${apiUrl}/api/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ firstName, lastName, email, password, confirmPassword})

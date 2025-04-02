@@ -11,6 +11,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [showPassword, setVisible] = useState(false);
     const [remember, setRemember] = useState(false);
+    const apiUrl = process.env.REACT_APP_API_URL;
     
     const auth = useAuth();
     

@@ -15,6 +15,7 @@ export default function Edit() {
 
     const [error, setError] = useState("");
     const rooms = [{ label: "GK301", value: "GK301" }, { label: "GK404", value: "GK404" }, { label: "GK304A", value: "GK304A" }];
+    const apiUrl = process.env.REACT_APP_API_URL;
 
 //    const [email, setEmail] = useState("john@dlsu.edu.ph");
 

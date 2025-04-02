@@ -30,6 +30,9 @@ export default function Profile() {
         return (JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"))) ?? null
     });
 
+    const apiUrl = process.env.REACT_APP_API_URL;
+
+
     const columnHeader = [
         {label: "Name", accessor: "fullName"},
         {label: "Laboratory", accessor: "labID"},
@@ -101,7 +104,7 @@ export default function Profile() {
                 }
                 //console.log("user.otherID:", user.otherID);
 
-                const response = await fetch(`http://localhost:5000/api/reservations/${user.otherID}`, {
+                const response = await fetch(`${apiUrl}/api/reservations/${user.otherID}`, {
                     method: 'GET',
                 });
                 
@@ -194,7 +197,7 @@ export default function Profile() {
                 formData.append("profilePicture", pfpUrl);
             }
     
-            const response = await fetch(`http://localhost:5000/api/profile/${storedUser.id}`, {
+            const response = await fetch(`${apiUrl}/api/profile/${storedUser.id}`, {
                 method: "POST",
                 body: formData,
             });
@@ -220,7 +223,7 @@ export default function Profile() {
         }
     
         try {
-            const response = await fetch(`http://localhost:5000/api/reservations/delete/${reservationId}`, {
+            const response = await fetch(`${apiUrl}/api/reservations/delete/${reservationId}`, {
                 method: "DELETE",
             });
     
@@ -260,7 +263,7 @@ export default function Profile() {
             try {
                 if (otherID) {
                     //console.log("Deleting reservations for:", otherID);
-                    const resResponse = await fetch(`http://localhost:5000/api/reservations/deleteAll/${otherID}`, {
+                    const resResponse = await fetch(`${apiUrl}/api/reservations/deleteAll/${otherID}`, {
                         method: "DELETE",
                     });
     
@@ -281,7 +284,7 @@ export default function Profile() {
             // delete profile
             try {
                 //console.log("Deleting profile with ID:", userID);
-                const response = await fetch(`http://localhost:5000/api/profile/delete/${userID}`, {
+                const response = await fetch(`${apiUrl}/api/profile/delete/${userID}`, {
                     method: "DELETE",
                 });
     

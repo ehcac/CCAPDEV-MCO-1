@@ -12,11 +12,12 @@ export default function Users(){
     const [profilesVisuals, setProfilesVisuals] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState(null);
+    const apiUrl = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
         const fetchProfiles = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/users`);
+                const response = await fetch(`${apiUrl}/api/users`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }

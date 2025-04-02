@@ -25,6 +25,8 @@ export default function Reserve() {
 
     const [seats, setSeats] = useState([]);
     const [seatVisuals, setSeatVisuals] = useState([]);
+    const apiUrl = process.env.REACT_APP_API_URL;
+
 
     const [user, setUser] = useState(() => {
             return (JSON.parse(localStorage.getItem("user")) || JSON.parse(sessionStorage.getItem("user"))) ?? null
@@ -103,7 +105,7 @@ export default function Reserve() {
             return [];
         }
     
-        const response = await fetch(`http://localhost:5000/api/reservations`);
+        const response = await fetch(`${apiUrl}/api/reservations`);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -202,7 +204,7 @@ export default function Reserve() {
         //console.log("Fetching seats for room:", selectedRoom.value);
         setLoading(true); 
         try {
-            const response = await fetch(`http://localhost:5000/api/lab/${selectedRoom.value}`);
+            const response = await fetch(`${apiUrl}/api/lab/${selectedRoom.value}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -449,7 +451,7 @@ export default function Reserve() {
             //console.log("Formatted data for DB:", formattedData);
         
             // Send to the server
-            const response = await fetch("http://localhost:5000/api/reservations", {
+            const response = await fetch(`${apiUrl}/api/reservations`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formattedData),
