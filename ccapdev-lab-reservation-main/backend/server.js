@@ -26,7 +26,7 @@ const frontendURL = process.env.FRONTEND_URL || "https://lab-reservation-system.
 
 app.use(cors({
   origin: ["https://lab-reservation-system.vercel.app", 
-  "https://lab-reservation-system-27y7tdqzl-ehcacs-projects.vercel.app"],
+  "https://lab-reservation-system-27y7tdqzl-ehcacs-projects.vercel.app", process.env.FRONTEND_URL],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']}
 ));
