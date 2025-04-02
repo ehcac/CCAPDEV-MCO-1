@@ -104,7 +104,7 @@ export default function Profile() {
                 }
                 //console.log("user.otherID:", user.otherID);
 
-                const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}}/api/reservations/${user.otherID}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/reservations/${user.otherID}`, {
                     method: 'GET',
                 });
                 
@@ -181,7 +181,7 @@ export default function Profile() {
     const handleSave = async () => {
         try {
             //confirmation message
-            const confirmation = window.confirm("Are you sure you want to submit this reservation?");
+            const confirmation = window.confirm("Are you sure you want to edit this profile?");
             if (!confirmation) {
                 setEditMode(false);
                 return; 
