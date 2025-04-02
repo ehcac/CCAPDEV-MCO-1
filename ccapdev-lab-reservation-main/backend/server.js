@@ -54,4 +54,7 @@ app.use("/api/auth", authRoutes);
 
 app.listen(5000, () => console.log("Server running on port 5000"));
 
-export { db };
+export function getDB() {
+  if (!db) throw new Error("Database not initialized. Wait for MongoDB connection.");
+  return db;
+}
