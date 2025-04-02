@@ -180,7 +180,7 @@ export default function Edit() {
             return [];
         }
     
-        const response = await fetch(`http://localhost:5000/api/reservations`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/reservations`);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -273,7 +273,7 @@ export default function Edit() {
         //console.log("Fetching seats for room:", selectedRoom.value);
         setLoading(true); 
         try {
-            const response = await fetch(`http://localhost:5000/api/lab/${selectedRoom.value}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL.replace(/\/$/, "")}/api/lab/${selectedRoom.value}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
