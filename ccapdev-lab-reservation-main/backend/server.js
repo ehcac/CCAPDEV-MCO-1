@@ -56,6 +56,10 @@ app.get('/favicon.ico', (req, res) => {
   res.status(204).send();  // No content for the favicon request
 });
 
+app.get("/", (req, res) => {
+  res.send("Backend is running");
+});
+
 app.listen(5000, () => console.log("Server running on port 5000"));
 
 export default app;
